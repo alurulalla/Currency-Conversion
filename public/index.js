@@ -2,26 +2,14 @@ const inrInputElement = document.getElementById('inr');
 const usdInputElement = document.getElementById('usd');
 const currentRateElement = document.getElementById('current-rate');
 
-inrInputElement.addEventListener('keyup', async (e) => {
+const getConversionValues = async (type, value) => {
   const rate = await getLatestConversionRate();
-  usdInputElement.value = ((+e.target.value * 10) / rate).toFixed(2);
-});
-
-inrInputElement.addEventListener('focus', async (e) => {
-  const rate = await getLatestConversionRate();
-  usdInputElement.value = ((+e.target.value * 10) / rate).toFixed(2);
-});
-
-usdInputElement.addEventListener('keyup', async (e) => {
-  const rate = await getLatestConversionRate();
-  inrInputElement.value = (+(e.target.value * 0.1 * rate)).toFixed(2);
-});
-
-usdInputElement.addEventListener('focus', async (e) => {
-  const rate = await getLatestConversionRate();
-  if (e.target.value)
-    inrInputElement.value = (+(e.target.value * 0.1 * rate)).toFixed(2);
-});
+  if (type === 'inr') {
+    usdInputElement.value = ((value * 10) / rate).toFixed(2);
+  } else {
+    inrInputElement.value = (value * 0.1 * rate).toFixed(2);
+  }
+};
 
 const getLatestConversionRate = async () => {
   const data = await fetch(
@@ -33,3 +21,19 @@ const getLatestConversionRate = async () => {
 };
 
 getLatestConversionRate();
+
+inrInputElement.addEventListener('keyup', (e) =>
+  getConversionValues('inr', +e.target.value)
+);
+
+inrInputElement.addEventListener('focus', (e) =>
+  getConversionValues('inr', +e.target.value)
+);
+
+usdInputElement.addEventListener('keyup', (e) =>
+  getConversionValues('usd', +e.target.value)
+);
+
+usdInputElement.addEventListener('focus', (e) =>
+  getConversionValues('usd', +e.target.value)
+);
